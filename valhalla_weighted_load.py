@@ -34,16 +34,21 @@ def load_buckets(directory: str) -> dict[str, list[dict]]:
 
         reqs = []
         for f in files:
-            with open(f) as fh:
-                req = json.load(fh)
-                req["_name"] = f.stem
-                req["_bucket"] = subdir.name
-                reqs.append(req)
+            try:
+                with open(f) as fh:
+                    req = json.load(fh)
+                    req["_name"] = f.stem
+                    req["_bucket"] = subdir.name
+                    reqs.append(req)
+            except Exception as e:
+                print(f"Failed to open {f}: {e}, skipping")
 
         buckets[subdir.name] = reqs
 
     if not buckets:
-        print(f"error: no buckets with .json files found in {directory}", file=sys.stderr)
+        print(
+            f"error: no buckets with .json files found in {directory}", file=sys.stderr
+        )
         sys.exit(1)
 
     for name, reqs in sorted(buckets.items()):
@@ -75,16 +80,25 @@ def build_schedule(
     active = [(name, w) for name, w in weights.items() if w > 0 and name in buckets]
 
     if not active:
-        print("error: no overlap between config weights and available buckets", file=sys.stderr)
+        print(
+            "error: no overlap between config weights and available buckets",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     missing = [name for name in weights if name not in buckets and weights[name] > 0]
     if missing:
-        print(f"warning: buckets in config but not on disk: {', '.join(missing)}", file=sys.stderr)
+        print(
+            f"warning: buckets in config but not on disk: {', '.join(missing)}",
+            file=sys.stderr,
+        )
 
     unused = [name for name in buckets if name not in weights]
     if unused:
-        print(f"warning: buckets on disk but not in config (weight=0): {', '.join(unused)}", file=sys.stderr)
+        print(
+            f"warning: buckets on disk but not in config (weight=0): {', '.join(unused)}",
+            file=sys.stderr,
+        )
 
     bucket_names = [name for name, _ in active]
     bucket_weights = [w for _, w in active]
@@ -124,7 +138,15 @@ def send_request(url: str, payload: dict, index: int) -> dict:
         elapsed = time.monotonic() - start
         nsrc = len(body.get("sources", []))
         ntgt = len(body.get("targets", []))
-        print(f"  [{bucket}] {name}: {r.status_code} in {elapsed:.3f}s ({nsrc}x{ntgt})")
+        tag = ""
+        if elapsed >= 10.0:
+            tag = " SNAIL"
+        elif elapsed >= 1.0:
+            tag = " SLOTH"
+        print(
+            f"  [{bucket}] {name}: {r.status_code} in {elapsed:.3f}s ({nsrc}x{ntgt}){tag}",
+            flush=True,
+        )
         return {
             "index": index,
             "bucket": bucket,
@@ -172,8 +194,10 @@ def print_summary(results: list[dict], wall: float, config: dict, args):
 
     print()
     print("per-bucket breakdown:")
-    print(f"  {'bucket':<8} {'count':>6} {'errors':>6} {'p50':>8} {'p95':>8} {'max':>8}")
-    print(f"  {'-'*8} {'-'*6} {'-'*6} {'-'*8} {'-'*8} {'-'*8}")
+    print(
+        f"  {'bucket':<8} {'count':>6} {'errors':>6} {'p50':>8} {'p95':>8} {'max':>8}"
+    )
+    print(f"  {'-' * 8} {'-' * 6} {'-' * 6} {'-' * 8} {'-' * 8} {'-' * 8}")
 
     for name in sorted(by_bucket):
         br = by_bucket[name]
@@ -183,9 +207,13 @@ def print_summary(results: list[dict], wall: float, config: dict, args):
             p50 = bt[len(bt) // 2]
             p95 = bt[int(len(bt) * 0.95)]
             mx = bt[-1]
-            print(f"  {name:<8} {len(br):>6} {berr:>6} {p50:>7.3f}s {p95:>7.3f}s {mx:>7.3f}s")
+            print(
+                f"  {name:<8} {len(br):>6} {berr:>6} {p50:>7.3f}s {p95:>7.3f}s {mx:>7.3f}s"
+            )
         else:
-            print(f"  {name:<8} {len(br):>6} {berr:>6} {'n/a':>8} {'n/a':>8} {'n/a':>8}")
+            print(
+                f"  {name:<8} {len(br):>6} {berr:>6} {'n/a':>8} {'n/a':>8} {'n/a':>8}"
+            )
 
     print("=" * 60)
 
@@ -221,12 +249,22 @@ def run(args):
 
 
 def main():
-    p = argparse.ArgumentParser(description="valhalla matrix load simulator (weighted buckets)")
-    p.add_argument("directory", help="directory containing bucket subdirs with .json request files")
+    p = argparse.ArgumentParser(
+        description="valhalla matrix load simulator (weighted buckets)"
+    )
+    p.add_argument(
+        "directory", help="directory containing bucket subdirs with .json request files"
+    )
     p.add_argument("config", help="JSON config file with bucket weights")
-    p.add_argument("-n", "--total", type=int, default=100, help="total requests (default: 100)")
-    p.add_argument("-t", "--threads", type=int, default=4, help="concurrent threads (default: 4)")
-    p.add_argument("-u", "--url", default="http://localhost:8002", help="valhalla base url")
+    p.add_argument(
+        "-n", "--total", type=int, default=100, help="total requests (default: 100)"
+    )
+    p.add_argument(
+        "-t", "--threads", type=int, default=4, help="concurrent threads (default: 4)"
+    )
+    p.add_argument(
+        "-u", "--url", default="http://localhost:8002", help="valhalla base url"
+    )
     p.add_argument("-s", "--seed", type=int, default=42, help="rng seed (default: 42)")
     args = p.parse_args()
     run(args)

@@ -1,0 +1,152 @@
+config: lognormal
+loading buckets from matrix_requests...
+  0_0: 41 templates
+  0_1: 18 templates
+  0_2: 18 templates
+  1_0: 32 templates
+  1_1: 30 templates
+  1_2: 6 templates
+  2_0: 11 templates
+  2_1: 13 templates
+  2_2: 11 templates
+
+scheduled distribution:
+  0_0:   43 ( 43.0%) #####################
+  0_1:    8 (  8.0%) ####
+  0_2:    3 (  3.0%) #
+  1_0:   24 ( 24.0%) ############
+  1_1:    9 (  9.0%) ####
+  1_2:    3 (  3.0%) #
+  2_0:    6 (  6.0%) ###
+  2_1:    3 (  3.0%) #
+  2_2:    1 (  1.0%) 
+
+target:  http://localhost:8002/sources_to_targets
+total:   100 requests
+threads: 1
+seed:    42
+
+  [1_0] barcelona_40: 200 in 0.785s (40x40)
+  [1_0] madrid_45: 200 in 0.867s (45x45)
+  [0_0] bruges_5: 200 in 0.030s (5x5)
+  [1_0] brussels_30: 200 in 0.516s (30x30)
+  [0_2] belgium_18: 200 in 0.626s (18x18)
+  [0_0] graz_7: 200 in 0.061s (7x7)
+  [0_0] vaduz_3: 200 in 0.012s (3x3)
+  [0_0] ghent_9: 200 in 0.093s (9x9)
+  [1_0] toulouse_25: 200 in 0.359s (25x25)
+  [0_0] turku_7: 200 in 0.080s (7x7)
+  [0_0] andorra_la_vella_5: 200 in 0.009s (5x5)
+  [1_0] hamburg_35: 200 in 1.366s (35x35) SLOTH
+  [1_0] oslo_30: 200 in 0.605s (30x30)
+  [0_0] graz_7: 200 in 0.060s (7x7)
+  [2_0] madrid_large_80: 200 in 1.933s (80x80) SLOTH
+  [0_0] palermo_10: 200 in 0.112s (10x10)
+  [0_0] nantes_10: 200 in 0.129s (10x10)
+  [1_0] berlin_40: 200 in 2.119s (40x40) SLOTH
+  [1_0] budapest_40: 200 in 1.105s (40x40) SLOTH
+  [2_1] lombardy_large_70: 200 in 4.337s (70x70) SLOTH
+  [0_0] ljubljana_10: 200 in 0.167s (10x10)
+  [1_1] peloponnese_25: 200 in 0.735s (25x25)
+  [1_2] norway_40: 200 in 3.146s (40x40) SLOTH
+  [0_2] bulgaria_15: 200 in 0.553s (15x15)
+  [0_0] ingolstadt_5: 200 in 0.071s (5x5)
+  [1_0] brussels_30: 200 in 0.558s (30x30)
+  [1_1] veneto_30: 200 in 1.267s (30x30) SLOTH
+  [0_0] linz_8: 200 in 0.095s (8x8)
+  [0_1] liguria_10: 200 in 0.114s (10x10)
+  [0_0] nantes_10: 200 in 0.137s (10x10)
+  [0_0] linz_8: 200 in 0.078s (8x8)
+  [1_0] bratislava_20: 200 in 0.256s (20x20)
+  [1_0] hamburg_35: 200 in 1.384s (35x35) SLOTH
+  [0_1] flevoland_6: 200 in 0.109s (6x6)
+  [0_0] palermo_10: 200 in 0.105s (10x10)
+  [0_0] vilnius_12: 200 in 0.158s (12x12)
+  [1_0] lyon_30: 200 in 0.522s (30x30)
+  [1_0] birmingham_30: 200 in 0.834s (30x30)
+  [0_0] bergen_7: 200 in 0.076s (7x7)
+  [1_1] lazio_30: 200 in 0.850s (30x30)
+  [0_0] graz_7: 200 in 0.067s (7x7)
+  [2_0] warsaw_large_65: 200 in 2.434s (65x65) SLOTH
+  [1_1] hessen_35: 200 in 1.483s (35x35) SLOTH
+  [0_0] split_6: 200 in 0.052s (6x6)
+  [0_0] san_marino_3: 200 in 0.022s (3x3)
+  [0_0] edinburgh_12: 200 in 0.236s (12x12)
+  [0_0] tartu_5: 200 in 0.039s (5x5)
+  [0_1] navarra_10: 200 in 0.114s (10x10)
+  [1_2] poland_50: 200 in 3.769s (50x50) SLOTH
+  [0_0] edinburgh_12: 200 in 0.297s (12x12)
+  [0_1] burgenland_8: 200 in 0.167s (8x8)
+  [1_0] budapest_40: 200 in 1.163s (40x40) SLOTH
+  [0_0] freiburg_6: 200 in 0.065s (6x6)
+  [1_0] valencia_30: 200 in 0.479s (30x30)
+  [0_2] malta_5: 200 in 0.061s (5x5)
+  [0_0] san_marino_3: 200 in 0.017s (3x3)
+  [0_1] vorarlberg_10: 200 in 0.178s (10x10)
+  [1_1] andalusia_45: 200 in 2.456s (45x45) SLOTH
+  [1_0] budapest_40: 200 in 1.166s (40x40) SLOTH
+  [1_0] marseille_35: 200 in 0.579s (35x35)
+  [1_0] oslo_30: 200 in 0.632s (30x30)
+  [0_0] riga_10: 200 in 0.223s (10x10)
+  [0_0] andorra_la_vella_5: 200 in 0.016s (5x5)
+  [2_0] hamburg_large_60: 200 in 2.613s (60x60) SLOTH
+  [2_1] tuscany_large_60: 200 in 2.527s (60x60) SLOTH
+  [0_0] bruges_5: 200 in 0.070s (5x5)
+  [1_1] galicia_30: 200 in 0.981s (30x30)
+  [1_1] nrw_50: 200 in 3.250s (50x50) SLOTH
+  [1_0] geneva_20: 200 in 0.217s (20x20)
+  [0_0] freiburg_6: 200 in 0.061s (6x6)
+  [0_1] tyrol_12: 200 in 0.336s (12x12)
+  [2_0] warsaw_large_65: 200 in 2.450s (65x65) SLOTH
+  [0_0] basel_6: 200 in 0.069s (6x6)
+  [0_0] nicosia_8: 200 in 0.063s (8x8)
+  [1_1] vaestra_goetaland_25: 200 in 0.636s (25x25)
+  [1_1] emilia_romagna_30: 200 in 0.999s (30x30)
+  [0_0] tromsoe_5: 200 in 0.061s (5x5)
+  [2_0] berlin_large_70: 200 in 4.329s (70x70) SLOTH
+  [1_0] bratislava_20: 200 in 0.271s (20x20)
+  [2_1] nrw_large_80: 200 in 5.630s (80x80) SLOTH
+  [1_0] dublin_30: 200 in 0.869s (30x30)
+  [1_0] hamburg_35: 200 in 1.370s (35x35) SLOTH
+  [0_0] vaduz_3: 200 in 0.059s (3x3)
+  [0_1] crete_15: 200 in 0.249s (15x15)
+  [2_0] greater_london_80: 200 in 7.953s (80x80) SLOTH
+  [1_0] sofia_30: 200 in 0.743s (30x30)
+  [2_2] united_kingdom_80: 200 in 12.068s (80x80) SNAIL
+  [0_0] tallinn_8: 200 in 0.340s (8x8)
+  [0_1] flevoland_6: 200 in 0.097s (6x6)
+  [0_0] monaco_4: 200 in 0.016s (4x4)
+  [0_0] tartu_5: 200 in 0.035s (5x5)
+  [0_0] ingolstadt_5: 200 in 0.040s (5x5)
+  [0_0] vilnius_12: 200 in 0.166s (12x12)
+  [0_0] bologna_10: 200 in 0.108s (10x10)
+  [1_2] norway_40: 200 in 3.200s (40x40) SLOTH
+  [0_0] koeln_10: 200 in 0.232s (10x10)
+  [0_0] split_6: 200 in 0.032s (6x6)
+  [0_0] edinburgh_12: 200 in 0.233s (12x12)
+  [1_0] zagreb_25: 200 in 0.602s (25x25)
+  [0_0] seville_15: 200 in 0.176s (15x15)
+
+============================================================
+config:       lognormal
+wall time:    95.29s
+requests:     100 (0 errors)
+latency min:  0.009s
+latency p50:  0.256s
+latency p95:  4.329s
+latency max:  12.068s
+throughput:   1.05 req/s
+
+per-bucket breakdown:
+  bucket    count errors      p50      p95      max
+  -------- ------ ------ -------- -------- --------
+  0_0          43      0   0.070s   0.236s   0.340s
+  0_1           8      0   0.167s   0.336s   0.336s
+  0_2           3      0   0.553s   0.626s   0.626s
+  1_0          24      0   0.743s   1.384s   2.119s
+  1_1           9      0   0.999s   3.250s   3.250s
+  1_2           3      0   3.200s   3.769s   3.769s
+  2_0           6      0   2.613s   7.953s   7.953s
+  2_1           3      0   4.337s   5.630s   5.630s
+  2_2           1      0  12.068s  12.068s  12.068s
+============================================================
