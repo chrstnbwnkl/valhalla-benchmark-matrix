@@ -3,3 +3,4 @@
 *.fgb
 *.osm
 /polygon_cache/
+polygon_cache

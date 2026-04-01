@@ -7,26 +7,6 @@ const path = require("path");
 
 const SCENARIOS = [
   {
-    name: "normal",
-    // title: "Bivariate normal distribution",
-    // description: "Normal across location count and geographical extent",
-    points: [
-      // { geo, loc, size }
-      //   geo  = Geographical Extent (0–1, where 0=local, 1=global)
-      //   loc  = Location Count     (0–1, where 0=few,   1=many)
-      //   size = Relative request volume (normalized to bubble radius)
-      { geo: 0.15, loc: 0.85, size: 10 },
-      { geo: 0.5, loc: 0.85, size: 30 },
-      { geo: 0.85, loc: 0.85, size: 10 },
-      { geo: 0.15, loc: 0.5, size: 30 },
-      { geo: 0.5, loc: 0.5, size: 50 },
-      { geo: 0.85, loc: 0.5, size: 30 },
-      { geo: 0.15, loc: 0.15, size: 10 },
-      { geo: 0.5, loc: 0.15, size: 30 },
-      { geo: 0.85, loc: 0.15, size: 10 },
-    ],
-  },
-  {
     name: "log-normal",
     // title: "Tobler's first law of Geography",
     // description: "Log-normal across location count and geographical extent",
@@ -44,21 +24,6 @@ const SCENARIOS = [
       { geo: 0.15, loc: 0.15, size: 50 },
       { geo: 0.5, loc: 0.15, size: 30 },
       { geo: 0.85, loc: 0.15, size: 17 },
-    ],
-  },
-  {
-    name: "last-mile-opt",
-    title: "Last mile optimization pattern",
-    description:
-      "Lots of locations, typically spread across cities, fewer across larger extents",
-    points: [
-      // { geo, loc, size }
-      //   geo  = Geographical Extent (0–1, where 0=local, 1=global)
-      //   loc  = Location Count     (0–1, where 0=few,   1=many)
-      //   size = Relative request volume (normalized to bubble radius)
-      { geo: 0.15, loc: 0.85, size: 60 },
-      { geo: 0.5, loc: 0.85, size: 15 },
-      { geo: 0.85, loc: 0.85, size: 3 },
     ],
   },
 ];
