@@ -1,0 +1,15 @@
+{
+  "verbose": false,
+  "costing": "auto",
+  "costing_options": {
+    "auto": {
+      "use_ferry": 0,
+      "use_highways": 0.5,
+      "use_tolls": 0.5,
+      "country_crossing_cost": 0,
+      "ignore_closures": true,
+      "height": 0,
+      "width": 0
+    }
+  }
+}
