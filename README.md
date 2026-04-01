@@ -516,7 +516,7 @@ Let's compare our new base line (using unordered set, keeping outer edge label v
 ![Memory consumption of our new baseline](img/new_baseline.png)
 
 
-![Memory consumption of the monotonic buffer approach](img/monotonic.png)
+![Memory consumption of the monotonic buffer approach](img/monotonic_buffer.png)
 
 
 The difference couldn't be more obvious; most of the time, the memory usage of the monotonic buffer approach is comparable to our base line, albeit more stable since we always keep our 2GB buffer around. Unfortunately that one "big" request really busts the bank, peaking at twice the memory consumption as the base line.
