@@ -4,19 +4,19 @@ Generate a Valhalla sources_to_targets request with random points within a place
 """
 
 import argparse
+import hashlib
 import json
 import random
 import sys
 import time
 import urllib.request
 import urllib.parse
+from pathlib import Path
 
 import numpy as np
 
 try:
     from shapely.geometry import shape, Point
-    from shapely import points as make_points
-    from shapely.strtree import STRtree
 except ImportError:
     print(
         "Error: shapely is required. Install with: pip install shapely", file=sys.stderr
@@ -24,7 +24,14 @@ except ImportError:
     sys.exit(1)
 
 
-def fetch_polygon(place_name: str) -> dict:
+def fetch_polygon(place_name: str, cache_dir: Path | None = None) -> dict:
+    if cache_dir:
+        cache_key = hashlib.sha256(place_name.encode()).hexdigest()[:16]
+        cache_file = cache_dir / f"{cache_key}.json"
+        if cache_file.exists():
+            print(f"Using cached polygon for '{place_name}'", file=sys.stderr)
+            return json.loads(cache_file.read_text())
+
     params = {
         "q": place_name,
         "format": "jsonv2",
@@ -62,6 +69,12 @@ def fetch_polygon(place_name: str) -> dict:
         sys.exit(1)
 
     print(f"Found: {result.get('display_name', place_name)}", file=sys.stderr)
+
+    if cache_dir:
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        cache_file.write_text(json.dumps(geojson))
+        print(f"Cached polygon to {cache_file}", file=sys.stderr)
+
     return geojson
 
 
@@ -95,12 +108,32 @@ def pick_points_from_csv(
 
     print(f"Loading points from {csv_path}...", file=sys.stderr)
     coords = np.loadtxt(csv_path, delimiter=",", skiprows=1)
+    print(f"Loaded {len(coords)} points", file=sys.stderr)
 
-    geoms = make_points(coords)
-    tree = STRtree(geoms)
+    # bbox pre-filter to narrow candidates cheaply
+    minx, miny, maxx, maxy = polygon.bounds
+    mask = (
+        (coords[:, 0] >= minx)
+        & (coords[:, 0] <= maxx)
+        & (coords[:, 1] >= miny)
+        & (coords[:, 1] <= maxy)
+    )
+    candidates = coords[mask]
+    print(f"{len(candidates)} points within bounding box", file=sys.stderr)
 
-    print(f"Querying {len(geoms)} points against polygon...", file=sys.stderr)
-    hits_idx = tree.query(polygon, predicate="within")
+    if len(candidates) == 0:
+        print(
+            "Error: no points from CSV fall within the polygon bounding box.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    # precise PIP using vectorized contains
+    from shapely import contains_xy
+
+    hits_mask = contains_xy(polygon, candidates[:, 0], candidates[:, 1])
+    hits_idx = np.where(hits_mask)[0]
+    print(f"{len(hits_idx)} points within polygon", file=sys.stderr)
 
     if len(hits_idx) == 0:
         print("Error: no points from CSV fall within the polygon.", file=sys.stderr)
@@ -112,10 +145,10 @@ def pick_points_from_csv(
             f"Using all of them.",
             file=sys.stderr,
         )
-        selected = coords[hits_idx]
+        selected = candidates[hits_idx]
     else:
         selected_idx = np.random.choice(hits_idx, size=n, replace=False)
-        selected = coords[selected_idx]
+        selected = candidates[selected_idx]
 
     # coords are X,Y (lon,lat) in CSV, return as (lat, lon)
     return [(row[1], row[0]) for row in selected]
@@ -148,6 +181,12 @@ def main():
         type=str,
         help="CSV with X,Y columns (lon,lat) to sample from instead of random generation",
     )
+    parser.add_argument(
+        "--cache-dir",
+        type=str,
+        default=".polygon_cache",
+        help="Directory to cache Nominatim polygon responses (default: .polygon_cache)",
+    )
     args = parser.parse_args()
 
     if args.n < 1:
@@ -163,8 +202,9 @@ def main():
             print(f"Error reading partial JSON: {e}", file=sys.stderr)
             sys.exit(1)
 
+    cache_dir = Path(args.cache_dir)
     print(f"Fetching boundary for '{args.place}'...", file=sys.stderr)
-    geojson = fetch_polygon(args.place)
+    geojson = fetch_polygon(args.place, cache_dir)
 
     if args.points_csv:
         print(f"Picking {args.n} points from CSV...", file=sys.stderr)

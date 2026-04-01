@@ -2,3 +2,4 @@
 *.pbf
 *.fgb
 *.osm
+/polygon_cache/

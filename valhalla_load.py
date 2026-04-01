@@ -95,16 +95,8 @@ def run(args):
             res = fut.result()
             results.append(res)
 
-            status = res["status"] or "ERR"
             if res["error"]:
                 errors += 1
-            # simple progress line
-            done = len(results)
-            if done % 10 == 0 or done == args.total:
-                print(
-                    f"  [{done}/{args.total}] last: {status} {res['elapsed']:.3f}s",
-                    flush=True,
-                )
 
     wall = time.monotonic() - t0
     times = [r["elapsed"] for r in results if r["error"] is None]

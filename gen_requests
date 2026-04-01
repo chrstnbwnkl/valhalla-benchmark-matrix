@@ -3,7 +3,9 @@ set -euo pipefail
  
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PARTIAL="$SCRIPT_DIR/partial.json"
+CACHE_DIR="$SCRIPT_DIR/polygon_cache"
 MATRIX_SCRIPT="$SCRIPT_DIR/random_matrix_points.py"
+POINTS_CSV="$SCRIPT_DIR/osm/bus_stops.csv"
 OUT_DIR="requests"
  
 # <place_query> <n_locs> <file_prefix> <output_dir>
@@ -224,12 +226,18 @@ for job in "${jobs[@]}"; do
  
     mkdir -p "$outdir"
     echo "Generating $n points for '$place'..." >&2
-    if [ ! -f "$OUT_DIR/$outdir/${prefix}_${n}.json" ]; then
-        if ! python "$MATRIX_SCRIPT" "$place" "$n" --partial "$PARTIAL" > "$OUT_DIR/$outdir/${prefix}_${n}.json"; then
+    OUTFILE="$OUT_DIR/$outdir/${prefix}_${n}.json"
+    OUTGEOJSON="$OUT_DIR/$outdir/${prefix}_${n}.geojson"
+    if [ ! -f "$OUTFILE" ]; then
+        if ! python "$MATRIX_SCRIPT" "$place" "$n" --partial "$PARTIAL" --cache-dir "$CACHE_DIR" --points-csv "$POINTS_CSV" > $OUTFILE; then
             echo "FAILED: $place" >&2
             rm -f "$outdir/${prefix}_${n}.json"
+        else 
+          cat $OUTFILE | s2tlocs > $OUTGEOJSON
         fi
         sleep 1 # respect Nominatims request limits
+    else 
+        cat $OUTFILE | s2tlocs > $OUTGEOJSON
     fi
 done
  
