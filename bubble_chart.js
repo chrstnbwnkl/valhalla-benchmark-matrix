@@ -7,73 +7,43 @@ const path = require("path");
 
 const SCENARIOS = [
   {
-    name: "static-small-scale",
-    title: "Static traffic, small scale",
-    description: "Small number of locations, small geographic spread",
+    name: "normal",
+    // title: "Bivariate normal distribution",
+    // description: "Normal across location count and geographical extent",
     points: [
       // { geo, loc, size }
       //   geo  = Geographical Extent (0–1, where 0=local, 1=global)
       //   loc  = Location Count     (0–1, where 0=few,   1=many)
       //   size = Relative request volume (normalized to bubble radius)
-      { geo: 0.15, loc: 0.15, size: 30 },
-    ],
-  },
-  {
-    name: "static-mid-scale",
-    title: "Static traffic, mid scale",
-    description: "Moderate number of locations, small geographic spread",
-    points: [
-      // { geo, loc, size }
-      //   geo  = Geographical Extent (0–1, where 0=local, 1=global)
-      //   loc  = Location Count     (0–1, where 0=few,   1=many)
-      //   size = Relative request volume (normalized to bubble radius)
+      { geo: 0.15, loc: 0.85, size: 10 },
+      { geo: 0.5, loc: 0.85, size: 30 },
+      { geo: 0.85, loc: 0.85, size: 10 },
       { geo: 0.15, loc: 0.5, size: 30 },
-    ],
-  },
-  {
-    name: "static-large-scale",
-    title: "Static traffic, large scale",
-    description: "Moderate number of locations, small geographic spread",
-    points: [
-      // { geo, loc, size }
-      //   geo  = Geographical Extent (0–1, where 0=local, 1=global)
-      //   loc  = Location Count     (0–1, where 0=few,   1=many)
-      //   size = Relative request volume (normalized to bubble radius)
-      { geo: 0.5, loc: 0.5, size: 30 },
-    ],
-  },
-  {
-    name: "slightly-spiky-location-size",
-    title: "Slightly spiky in location and geographical extent",
-    description: "Moderate number of locations, small geographic spread",
-    points: [
-      // { geo, loc, size }
-      //   geo  = Geographical Extent (0–1, where 0=local, 1=global)
-      //   loc  = Location Count     (0–1, where 0=few,   1=many)
-      //   size = Relative request volume (normalized to bubble radius)
-      { geo: 0.15, loc: 0.15, size: 30 },
-      { geo: 0.85, loc: 0.85, size: 3 },
-      { geo: 0.5, loc: 0.5, size: 20 },
+      { geo: 0.5, loc: 0.5, size: 50 },
+      { geo: 0.85, loc: 0.5, size: 30 },
+      { geo: 0.15, loc: 0.15, size: 10 },
+      { geo: 0.5, loc: 0.15, size: 30 },
+      { geo: 0.85, loc: 0.15, size: 10 },
     ],
   },
   {
     name: "log-normal",
-    title: "Log-normal across location count and geographical extent",
-    description: "Most requests are small in location count and geo extent",
+    // title: "Tobler's first law of Geography",
+    // description: "Log-normal across location count and geographical extent",
     points: [
       // { geo, loc, size }
       //   geo  = Geographical Extent (0–1, where 0=local, 1=global)
       //   loc  = Location Count     (0–1, where 0=few,   1=many)
       //   size = Relative request volume (normalized to bubble radius)
-      { geo: 0.15, loc: 0.15, size: 50 },
-      { geo: 0.5, loc: 0.15, size: 25 },
-      { geo: 0.85, loc: 0.15, size: 5 },
-      { geo: 0.15, loc: 0.5, size: 25 },
-      { geo: 0.5, loc: 0.5, size: 25 },
-      { geo: 0.85, loc: 0.5, size: 5 },
-      { geo: 0.15, loc: 0.85, size: 10 },
+      { geo: 0.15, loc: 0.85, size: 17 },
       { geo: 0.5, loc: 0.85, size: 10 },
-      { geo: 0.85, loc: 0.85, size: 1 },
+      { geo: 0.85, loc: 0.85, size: 3 },
+      { geo: 0.15, loc: 0.5, size: 30 },
+      { geo: 0.5, loc: 0.5, size: 17 },
+      { geo: 0.85, loc: 0.5, size: 10 },
+      { geo: 0.15, loc: 0.15, size: 50 },
+      { geo: 0.5, loc: 0.15, size: 30 },
+      { geo: 0.85, loc: 0.15, size: 17 },
     ],
   },
   {
@@ -100,7 +70,7 @@ const SCENARIOS = [
 const CHART = {
   width: 540, // plot area width
   height: 400, // plot area height
-  padLeft: 150, // space for Y-axis title + tick labels
+  padLeft: 110, // space for Y-axis title + tick labels
   padBottom: 80, // space for X-axis title + tick labels
   padTop: 50, // space for title + description
   padRight: 24,
@@ -146,8 +116,8 @@ function generateSVG(scenario) {
   svg += `  <rect width="${totalW}" height="${totalH}" fill="white"/>\n`;
 
   // Title & description
-  svg += `  <text x="${plotLeft}" y="22" font-size="16" font-weight="600" fill="${C.textColor}">${scenario.title}</text>\n`;
-  svg += `  <text x="${plotLeft}" y="40" font-size="12" fill="${C.textMuted}">${scenario.description}</text>\n`;
+  svg += `  <text x="${plotLeft}" y="22" font-size="16" font-weight="600" fill="${C.textColor}">${scenario.title ?? ""}</text>\n`;
+  svg += `  <text x="${plotLeft}" y="40" font-size="12" fill="${C.textMuted}">${scenario.description ?? ""}</text>\n`;
 
   // Grid lines
   for (let i = 0; i <= C.gridLines; i++) {
@@ -184,7 +154,7 @@ function generateSVG(scenario) {
 >${label}</text>\n`;
   });
   // Y-axis title (rotated)
-  svg += `  <text text-anchor="middle" font-size="14" font-weight="500" fill="${C.textColor}" transform="translate(${plotLeft - 106}, ${plotTop + C.height / 2}) rotate(-90)">Location count →</text>\n`;
+  svg += `  <text text-anchor="middle" font-size="14" font-weight="500" fill="${C.textColor}" transform="translate(${plotLeft - 80}, ${plotTop + C.height / 2}) rotate(-90)">Location count →</text>\n`;
 
   // Bubbles — largest first so small ones render on top
   [...scenario.points]
@@ -194,9 +164,9 @@ function generateSVG(scenario) {
       const cy = toY(pt.loc);
       const r = toRadius(pt.size);
       svg += `  <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="${C.bubbleFill}" stroke="${C.bubbleStroke}" stroke-width="1"/>\n`;
-      if (r > 16) {
-        svg += `  <text x="${cx.toFixed(1)}" y="${cy.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="500" fill="${C.labelInBubble}" opacity="0.8">${pt.size}</text>\n`;
-      }
+      // if (r > 16) {
+      //   svg += `  <text x="${cx.toFixed(1)}" y="${cy.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="500" fill="${C.labelInBubble}" opacity="0.8">${pt.size}</text>\n`;
+      // }
     });
 
   svg += `</svg>\n`;

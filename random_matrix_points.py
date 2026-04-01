@@ -11,8 +11,12 @@ import time
 import urllib.request
 import urllib.parse
 
+import numpy as np
+
 try:
     from shapely.geometry import shape, Point
+    from shapely import points as make_points
+    from shapely.strtree import STRtree
 except ImportError:
     print(
         "Error: shapely is required. Install with: pip install shapely", file=sys.stderr
@@ -52,7 +56,7 @@ def fetch_polygon(place_name: str) -> dict:
     if geojson["type"] not in ("Polygon", "MultiPolygon"):
         print(
             f"Error: expected Polygon/MultiPolygon, got {geojson['type']}. "
-            f"Try being more specific with --country.",
+            f"Try being more specific.",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -84,6 +88,39 @@ def random_points_in_polygon(geojson: dict, n: int) -> list[tuple[float, float]]
     return points
 
 
+def pick_points_from_csv(
+    csv_path: str, geojson: dict, n: int
+) -> list[tuple[float, float]]:
+    polygon = shape(geojson)
+
+    print(f"Loading points from {csv_path}...", file=sys.stderr)
+    coords = np.loadtxt(csv_path, delimiter=",", skiprows=1)
+
+    geoms = make_points(coords)
+    tree = STRtree(geoms)
+
+    print(f"Querying {len(geoms)} points against polygon...", file=sys.stderr)
+    hits_idx = tree.query(polygon, predicate="within")
+
+    if len(hits_idx) == 0:
+        print("Error: no points from CSV fall within the polygon.", file=sys.stderr)
+        sys.exit(1)
+
+    if len(hits_idx) < n:
+        print(
+            f"Warning: only {len(hits_idx)} points available in polygon, requested {n}. "
+            f"Using all of them.",
+            file=sys.stderr,
+        )
+        selected = coords[hits_idx]
+    else:
+        selected_idx = np.random.choice(hits_idx, size=n, replace=False)
+        selected = coords[selected_idx]
+
+    # coords are X,Y (lon,lat) in CSV, return as (lat, lon)
+    return [(row[1], row[0]) for row in selected]
+
+
 def build_request(
     points: list[tuple[float, float]], partial: dict | None = None
 ) -> dict:
@@ -106,6 +143,11 @@ def main():
     parser.add_argument(
         "--partial", type=str, help="Path to partial Valhalla request JSON to merge in"
     )
+    parser.add_argument(
+        "--points-csv",
+        type=str,
+        help="CSV with X,Y columns (lon,lat) to sample from instead of random generation",
+    )
     args = parser.parse_args()
 
     if args.n < 1:
@@ -124,8 +166,12 @@ def main():
     print(f"Fetching boundary for '{args.place}'...", file=sys.stderr)
     geojson = fetch_polygon(args.place)
 
-    print(f"Generating {args.n} random points...", file=sys.stderr)
-    points = random_points_in_polygon(geojson, args.n)
+    if args.points_csv:
+        print(f"Picking {args.n} points from CSV...", file=sys.stderr)
+        points = pick_points_from_csv(args.points_csv, geojson, args.n)
+    else:
+        print(f"Generating {args.n} random points...", file=sys.stderr)
+        points = random_points_in_polygon(geojson, args.n)
 
     request = build_request(points, partial)
     json.dump(request, sys.stdout, indent=2)
